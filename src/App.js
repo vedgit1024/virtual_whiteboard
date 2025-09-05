@@ -1,6 +1,12 @@
 import Board from "./components/Board";
+import Toolbar from "./Toolbar";
 
 function App() {
-  return <Board />;
+  return (
+    <>
+      <Toolbar />
+      <Board />;
+    </>
+  );
 }
 export default App;
