@@ -17,7 +17,7 @@ import { TOOL_ITEMS } from "../../constants";
 const Toolbar = () => {
   //I want whichever tool I click, remain active. so I will use state
   // const [activeToolItem, setActiveToolItem] = useState("LINE"); //Let initially my active toolItem is A//Naming Tools properly Now
-  const { activeToolItem, handleToolItemClick } = useContext(boardContext);
+  const { activeToolItem, changeToolHandler } = useContext(boardContext);
 
   return (
     <div className={classes.container}>
@@ -25,7 +25,7 @@ const Toolbar = () => {
         className={cx(classes.toolItem, {
           [classes.active]: activeToolItem === "LINE",
         })}
-        onClick={() => handleToolItemClick(TOOL_ITEMS.LINE)}
+        onClick={() => changeToolHandler(TOOL_ITEMS.LINE)}
       >
         <FaSlash />
       </div>
@@ -33,7 +33,7 @@ const Toolbar = () => {
         className={cx(classes.toolItem, {
           [classes.active]: activeToolItem === "RECTANGLE",
         })}
-        onClick={() => handleToolItemClick(TOOL_ITEMS.RECTANGLE)}
+        onClick={() => changeToolHandler(TOOL_ITEMS.RECTANGLE)}
       >
         <LuRectangleHorizontal />
       </div>

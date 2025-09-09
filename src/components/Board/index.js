@@ -3,11 +3,18 @@ import { useContext, useEffect, useRef } from "react";
 //importing rough.js
 import rough from "roughjs";
 import boardContext from "../../store/board-context";
+import { TOOL_ACTION_TYPES } from "../../constants";
 
 function Board() {
   const canvasRef = useRef();
   //Lect3
-  const { elements, handleBoardMouseDown } = useContext(boardContext);
+  const {
+    elements,
+    boardMouseDownHandler,
+    boardMouseMoveHandler,
+    boardMouseUpHandler, //Part 4
+    toolActionType,
+  } = useContext(boardContext);
   //--Lect3
 
   useEffect(() => {
@@ -56,15 +63,33 @@ function Board() {
     return () => context.clearRect(0, 0, canvas.width, canvas.height);
   }, [elements]);
 
-  const boardMouseDownHandler = (event) => {
+  const handleMouseDown = (event) => {
     // const clientX = event.clientX;
     // const clientY = event.clientY;
     // //Inn dono ki help se mujhe x,y mil jyenge ki maine click kaha kia tha board p
     // console.log(clientX, clientY);
-    handleBoardMouseDown(event);
+    boardMouseDownHandler(event);
+  };
+  const handleMouseMove = (event) => {
+    if (toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      boardMouseMoveHandler(event); //ye banaunga context mei
+    }
   };
 
-  return <canvas ref={canvasRef} onMouseDown={boardMouseDownHandler} />;
+  //Part 4
+  const handleMouseUp = () => {
+    boardMouseUpHandler();
+  };
+  //--Part 4
+
+  return (
+    <canvas
+      ref={canvasRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+    />
+  );
 }
 
 export default Board;
