@@ -7,6 +7,8 @@ import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 //Lect3
 
 import rough from "roughjs/bin/rough";
+
+import { createRoughElement } from "../utils/elements";
 const gen = rough.generator();
 
 const boardReducer = (state, action) => {
@@ -20,15 +22,26 @@ const boardReducer = (state, action) => {
     //reducer ke andar se final coordinate ka state change kr rha hu, not in handleMouseDown
     case "DRAW_DOWN": {
       const { clientX, clientY } = action.payload;
-      const newElement = {
-        id: state.elements.length,
-        x1: clientX,
-        y1: clientY,
-        //let for now x2 y2 bhi same hai
-        x2: clientX,
-        y2: clientY,
-        roughEle: gen.line(clientX, clientY, clientX, clientY),
-      };
+
+      //Part 5---Created a utils folder in which exporting createRoughEle function
+      const newElement = createRoughElement(
+        state.elements.length, //id
+        clientX,
+        clientY,
+        clientX,
+        clientY,
+        { type: state.activeToolItem }
+      );
+
+      // const newElement = {
+      //   id: state.elements.length,
+      //   x1: clientX,
+      //   y1: clientY,
+      //   //let for now x2 y2 bhi same hai
+      //   x2: clientX,
+      //   y2: clientY,
+      //   roughEle: gen.line(clientX, clientY, clientX, clientY),
+      // };
       const prevElements = state.elements;
 
       //element push
@@ -47,15 +60,23 @@ const boardReducer = (state, action) => {
       const { clientX, clientY } = action.payload;
       const newElements = [...state.elements];
       const index = state.elements.length - 1;
-      newElements[index].x2 = clientX;
-      newElements[index].y2 = clientY;
+      //P5
+      const { x1, y1 } = newElements[index]; //destructure karke last stored element mei se xq, y1 nikaal liya, final is clientX and clientY
+      // newElements[index].x2 = clientX;
+      // newElements[index].y2 = clientY;
 
-      newElements[index].roughEle = gen.line(
-        newElements[index].x1,
-        newElements[index].y1,
-        clientX,
-        clientY
-      );
+      // newElements[index].roughEle = gen.line(
+      //   newElements[index].x1,
+      //   newElements[index].y1,
+      //   clientX,
+      //   clientY
+      //);
+      //P5
+      const newElement = createRoughElement(index, x1, y1, clientX, clientY, {
+        type: state.activeToolItem,
+      });
+      newElements[index] = newElement;
+      //--P5
       return {
         ...state,
         elements: newElements,
