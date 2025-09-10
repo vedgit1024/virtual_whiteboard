@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef } from "react";
 
 //importing rough.js
 import rough from "roughjs";
@@ -17,7 +17,7 @@ function Board() {
   } = useContext(boardContext);
   //--Lect3
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -39,7 +39,7 @@ function Board() {
   }, []);
 
   //Ek new useEffect bnaya aur uper se isme jo commented out h code wo daal diya
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const roughCanvas = rough.canvas(canvas);
     const generator = roughCanvas.generator;

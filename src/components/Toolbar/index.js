@@ -11,6 +11,8 @@ import cx from "classnames"; //Isse className ko wrap karte hai
 
 import { FaSlash } from "react-icons/fa";
 import { LuRectangleHorizontal } from "react-icons/lu";
+import { FaRegCircle, FaArrowRight } from "react-icons/fa";
+
 import boardContext from "../../store/board-context";
 import { TOOL_ITEMS } from "../../constants";
 
@@ -36,6 +38,24 @@ const Toolbar = () => {
         onClick={() => changeToolHandler(TOOL_ITEMS.RECTANGLE)}
       >
         <LuRectangleHorizontal />
+      </div>
+      {/* Adding circle --P 6 */}
+      <div
+        className={cx(classes.toolItem, {
+          [classes.active]: activeToolItem === "CIRCLE",
+        })}
+        onClick={() => changeToolHandler(TOOL_ITEMS.CIRCLE)}
+      >
+        <FaRegCircle />
+      </div>
+      {/* Adding arrow --P7*/}
+      <div
+        className={cx(classes.toolItem, {
+          [classes.active]: activeToolItem === "ARROW",
+        })}
+        onClick={() => changeToolHandler(TOOL_ITEMS.ARROW)}
+      >
+        <FaArrowRight />
       </div>
     </div>
   );
