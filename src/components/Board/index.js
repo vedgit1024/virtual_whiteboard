@@ -3,7 +3,7 @@ import { useContext, useEffect, useLayoutEffect, useRef } from "react";
 //importing rough.js
 import rough from "roughjs";
 import boardContext from "../../store/board-context";
-import { TOOL_ACTION_TYPES } from "../../constants";
+import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
 
 function Board() {
@@ -61,9 +61,46 @@ function Board() {
     // roughCanvas.draw(rect2);
 
     //Karna ye hai ki elements jo draw honge, wo changes mai elements m daal dunga as a dependency so every move page refreshes
+    // elements.forEach((element) => {
+    //   roughCanvas.draw(element.roughEle); //draw krne wale element ko as an object lunga
+    // });
+    //Like above we drew using rough library, we can't use it for brush continuous draw functionality.
+
+    //P10
     elements.forEach((element) => {
-      roughCanvas.draw(element.roughEle); //draw krne wale element ko as an object lunga
+      switch (element.type) {
+        case TOOL_ITEMS.LINE:
+        case TOOL_ITEMS.CIRCLE:
+        case TOOL_ITEMS.RECTANGLE:
+        case TOOL_ITEMS.ARROW:
+          roughCanvas.draw(element.roughEle); //draw krne wale element ko as an object lunga
+          break;
+        case TOOL_ITEMS.BRUSH: {
+          // context.fillStyle = element.stroke; //kyuki waha se mere paas element mei stroke ayega
+          // //then call context.fill
+
+          // context.lineWidth = element.size || 2; // smaller = thinner brush
+          // // context.fill(element.path);
+          // context.stroke(element.path);
+          // context.restore();
+          // break;
+          context.strokeStyle = element.stroke;
+          context.lineWidth = element.size || 2;
+          context.lineJoin = "round"; // smooth joints
+          context.lineCap = "round"; // smooth line ends
+
+          context.beginPath();
+          context.moveTo(element.points[0].x, element.points[0].y);
+          element.points.forEach((p) => context.lineTo(p.x, p.y));
+          context.stroke();
+          context.restore();
+          break;
+        }
+        default:
+          throw new Error("Type Not Recognized");
+      }
     });
+    //--P10
 
     //clearning the side effect--> cleanup function lga diya, kyuki agar elements change ho to sab saaf krdo canvas fir element draw krdo
     return () => context.clearRect(0, 0, canvas.width, canvas.height);

@@ -46,6 +46,10 @@ const initialToolboxState = {
     stroke: COLORS.BLACK,
     size: 1, //stroke size
   },
+  [TOOL_ITEMS.BRUSH]: {
+    stroke: COLORS.BLACK,
+    size: 1, //stroke size
+  },
 };
 //Isko provider mei as value mei provide bhi karna padega
 
