@@ -21,7 +21,7 @@ const boardReducer = (state, action) => {
     }
     //reducer ke andar se final coordinate ka state change kr rha hu, not in handleMouseDown
     case "DRAW_DOWN": {
-      const { clientX, clientY } = action.payload;
+      const { clientX, clientY, stroke, fill, size } = action.payload;
 
       //Part 5---Created a utils folder in which exporting createRoughEle function
       const newElement = createRoughElement(
@@ -30,7 +30,7 @@ const boardReducer = (state, action) => {
         clientY,
         clientX,
         clientY,
-        { type: state.activeToolItem }
+        { type: state.activeToolItem, stroke, fill, size }
       );
 
       // const newElement = {
@@ -61,7 +61,7 @@ const boardReducer = (state, action) => {
       const newElements = [...state.elements];
       const index = state.elements.length - 1;
       //P5
-      const { x1, y1 } = newElements[index]; //destructure karke last stored element mei se xq, y1 nikaal liya, final is clientX and clientY
+      const { x1, y1, stroke, fill, size } = newElements[index]; //destructure karke last stored element mei se xq, y1 nikaal liya, final is clientX and clientY
       // newElements[index].x2 = clientX;
       // newElements[index].y2 = clientY;
 
@@ -74,6 +74,9 @@ const boardReducer = (state, action) => {
       //P5
       const newElement = createRoughElement(index, x1, y1, clientX, clientY, {
         type: state.activeToolItem,
+        stroke,
+        fill,
+        size,
       });
       newElements[index] = newElement;
       //--P5
@@ -127,7 +130,7 @@ const BoardProvider = ({ children }) => {
   };
 
   //To handle elements new pushes, kyuki mujhe states change krni thi mouse drop krne p, wo mai provider ke andar hi kar paunga
-  const boardMouseDownHandler = (event) => {
+  const boardMouseDownHandler = (event, toolboxState) => {
     const { clientX, clientY } = event;
     // const roughEle = gen.line(clientX, clientY, clientX, clientY); //(x1,y1)initial ---- (x2,y2) final
     dispatchBoardAction({
@@ -135,6 +138,9 @@ const BoardProvider = ({ children }) => {
       payload: {
         clientX,
         clientY,
+        stroke: toolboxState[boardState.activeToolItem]?.stroke,
+        fill: toolboxState[boardState.activeToolItem]?.fill,
+        size: toolboxState[boardState.activeToolItem]?.size,
       },
     });
   };

@@ -4,6 +4,7 @@ import { useContext, useEffect, useLayoutEffect, useRef } from "react";
 import rough from "roughjs";
 import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES } from "../../constants";
+import toolboxContext from "../../store/toolbox-context";
 
 function Board() {
   const canvasRef = useRef();
@@ -16,6 +17,11 @@ function Board() {
     toolActionType,
   } = useContext(boardContext);
   //--Lect3
+
+  //P9
+  //To handle toolbox state, directly as a parameter pass kar denge and handle kar lenge
+  const { toolboxState } = useContext(toolboxContext);
+  //--P9
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -68,7 +74,7 @@ function Board() {
     // const clientY = event.clientY;
     // //Inn dono ki help se mujhe x,y mil jyenge ki maine click kaha kia tha board p
     // console.log(clientX, clientY);
-    boardMouseDownHandler(event);
+    boardMouseDownHandler(event, toolboxState);
   };
   const handleMouseMove = (event) => {
     if (toolActionType === TOOL_ACTION_TYPES.DRAWING) {

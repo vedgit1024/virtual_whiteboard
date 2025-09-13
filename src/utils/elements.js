@@ -5,19 +5,46 @@ import { getArrowHeadsCoordinates } from "./math";
 
 const gen = rough.generator();
 
-export const createRoughElement = (id, x1, y1, x2, y2, { type }) => {
+export const createRoughElement = (
+  id,
+  x1,
+  y1,
+  x2,
+  y2,
+  { type, stroke, fill, size }
+) => {
   const element = {
     id,
     x1,
     y1,
     x2,
     y2,
+    //P9
+    type,
+    stroke,
+    fill,
+    size,
+    //--P9
   };
 
   //Whenever i am drawing a shape, the handwritten style is changing with every rendering, to stop this
   let options = {
     seed: id + 1, //seed can't be 0
+    fillStyle: "solid",
   };
+  //P9
+  //Now stroke aur fill yaha tak pahuch chuke hai, after doing all necessary codes
+  if (stroke) {
+    options.stroke = stroke;
+  }
+  if (fill) {
+    options.fill = fill;
+  }
+  if (size) {
+    options.strokeWidth = size;
+  }
+  //ye options mei pass ho ja rhe h tool components mei jo aage jaake mai generator ko de de rha hu
+  //P--9
 
   //Handling element object created above using switch case
   switch (type) {
