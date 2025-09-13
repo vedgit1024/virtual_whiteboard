@@ -84,7 +84,10 @@ const boardReducer = (state, action) => {
 
       return {
         ...state,
-        toolActionType: TOOL_ACTION_TYPES.DRAWING,
+        toolActionType:
+          state.activeToolItem === TOOL_ITEMS.ERASER
+            ? TOOL_ACTION_TYPES.ERASING
+            : TOOL_ACTION_TYPES.DRAWING,
         elements: [...prevElements, newElement],
       };
     }
@@ -233,6 +236,8 @@ const BoardProvider = ({ children }) => {
       },
     });
   };
+
+  //Movehandler mei move karte time hum ye bhi dekhna hai ki mai draw kar raha hu ya erase, to uske liye mai toolActionType banaunga reducer mei and uske hisab se mai move handler ko call karunga ya nahi
   const boardMouseUpHandler = () => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.DRAW_UP,
