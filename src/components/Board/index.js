@@ -114,9 +114,9 @@ function Board() {
     boardMouseDownHandler(event, toolboxState);
   };
   const handleMouseMove = (event) => {
-    if (toolActionType === TOOL_ACTION_TYPES.DRAWING) {
-      boardMouseMoveHandler(event); //ye banaunga context mei
-    }
+    // if (toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+    boardMouseMoveHandler(event); //ye banaunga context mei
+    // }
   };
 
   //Part 4

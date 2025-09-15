@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { act, useReducer } from "react";
 import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 
@@ -11,6 +11,8 @@ import rough from "roughjs/bin/rough";
 import { createRoughElement, getSvgPathFromStroke } from "../utils/elements";
 import getStroke from "perfect-freehand"; //Installed perfect-freehand library first
 
+import { isPointNearElement } from "../utils/elements";
+
 const gen = rough.generator();
 
 const boardReducer = (state, action) => {
@@ -19,6 +21,12 @@ const boardReducer = (state, action) => {
       return {
         ...state,
         activeToolItem: action.payload.tool,
+      };
+    }
+    case BOARD_ACTIONS.CHANGE_ACTION_TYPE: {
+      return {
+        ...state,
+        toolActionType: action.payload.actionType,
       };
     }
     //reducer ke andar se final coordinate ka state change kr rha hu, not in handleMouseDown
@@ -84,10 +92,7 @@ const boardReducer = (state, action) => {
 
       return {
         ...state,
-        toolActionType:
-          state.activeToolItem === TOOL_ITEMS.ERASER
-            ? TOOL_ACTION_TYPES.ERASING
-            : TOOL_ACTION_TYPES.DRAWING,
+        toolActionType: TOOL_ACTION_TYPES.DRAWING,
         elements: [...prevElements, newElement],
       };
     }
@@ -164,19 +169,32 @@ const boardReducer = (state, action) => {
       //   elements: newElements,
       // };
     }
-    case "DRAW_UP": {
+    // case "DRAW_UP": {
+    //   return {
+    //     ...state,
+    //     toolActionType: TOOL_ACTION_TYPES.NONE,
+    //   };
+    // } ------->>>>>>>>>Now aab iski zarurat nahi hai, kyuki mai mouse up hone pe bhi toolActionType ko NONE kr dunga
+    //P11
+    case BOARD_ACTIONS.ERASE: {
+      const { clientX, clientY } = action.payload;
+      let newElements = [...state.elements];
+      newElements = newElements.filter((element) => {
+        return !isPointNearElement(element, clientX, clientY);
+      });
       return {
         ...state,
-        toolActionType: TOOL_ACTION_TYPES.NONE,
+        elements: newElements,
       };
     }
+    //P--11
     //Part--4
     default:
       return state;
   }
 };
 const initialBoardState = {
-  activeToolItem: TOOL_ITEMS.LINE,
+  activeToolItem: TOOL_ITEMS.BRUSH, //initially brush select hoga
   elements: [],
 
   //Part 4
@@ -212,6 +230,19 @@ const BoardProvider = ({ children }) => {
   const boardMouseDownHandler = (event, toolboxState) => {
     const { clientX, clientY } = event;
     // const roughEle = gen.line(clientX, clientY, clientX, clientY); //(x1,y1)initial ---- (x2,y2) final
+
+    //P11
+    if (boardState.activeToolItem === TOOL_ITEMS.ERASER) {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+        payload: {
+          actionType: TOOL_ACTION_TYPES.ERASING,
+        },
+      });
+      return;
+    }
+
+    //--P11
     dispatchBoardAction({
       type: "DRAW_DOWN",
       payload: {
@@ -228,19 +259,36 @@ const BoardProvider = ({ children }) => {
   const boardMouseMoveHandler = (event) => {
     const { clientX, clientY } = event;
     // const roughEle = gen.line(clientX, clientY, clientX, clientY); //(x1,y1)initial ---- (x2,y2) final
-    dispatchBoardAction({
-      type: "DRAW_MOVE",
-      payload: {
-        clientX,
-        clientY,
-      },
-    });
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      dispatchBoardAction({
+        type: "DRAW_MOVE",
+        payload: {
+          clientX,
+          clientY,
+        },
+      });
+    } else if (boardState.toolActionType === TOOL_ACTION_TYPES.ERASING) {
+      //Eraser logic
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.ERASE,
+        payload: {
+          clientX,
+          clientY,
+        },
+      });
+    }
   };
 
   //Movehandler mei move karte time hum ye bhi dekhna hai ki mai draw kar raha hu ya erase, to uske liye mai toolActionType banaunga reducer mei and uske hisab se mai move handler ko call karunga ya nahi
   const boardMouseUpHandler = () => {
     dispatchBoardAction({
-      type: BOARD_ACTIONS.DRAW_UP,
+      // type: BOARD_ACTIONS.DRAW_UP,
+      //P11
+      type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+      payload: {
+        actionType: TOOL_ACTION_TYPES.NONE,
+      },
+      //--P11
     });
   };
 
