@@ -9,7 +9,7 @@ import { isPointCloseToLine } from "./math";
 
 const gen = rough.generator();
 
-export const createRoughElement = (
+export const createElement = (
   id,
   x1,
   y1,
@@ -98,6 +98,10 @@ export const createRoughElement = (
       ];
       //Now constructing the arrow using gen.linearPath
       element.roughEle = gen.linearPath(points, options);
+      return element;
+    }
+    case TOOL_ITEMS.TEXT: {
+      element.text = ""; //Initially click karne pe text empty hoga hoga textarea ke under
       return element;
     }
     default:

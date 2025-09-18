@@ -50,6 +50,10 @@ const initialToolboxState = {
     stroke: COLORS.BLACK,
     size: 1, //stroke size
   },
+  [TOOL_ITEMS.TEXT]: {
+    stroke: COLORS.BLACK,
+    size: 32, //initial font size
+  },
 };
 //Isko provider mei as value mei provide bhi karna padega
 

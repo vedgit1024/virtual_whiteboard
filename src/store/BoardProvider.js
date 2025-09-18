@@ -8,7 +8,7 @@ import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 
 import rough from "roughjs/bin/rough";
 
-import { createRoughElement, getSvgPathFromStroke } from "../utils/elements";
+import { createElement, getSvgPathFromStroke } from "../utils/elements";
 import getStroke from "perfect-freehand"; //Installed perfect-freehand library first
 
 import { isPointNearElement } from "../utils/elements";
@@ -80,7 +80,7 @@ const boardReducer = (state, action) => {
         };
       } else {
         // Default for rough.js shapes
-        newElement = createRoughElement(
+        newElement = createElement(
           state.elements.length,
           clientX,
           clientY,
@@ -92,7 +92,10 @@ const boardReducer = (state, action) => {
 
       return {
         ...state,
-        toolActionType: TOOL_ACTION_TYPES.DRAWING,
+        toolActionType:
+          state.activeToolItem === TOOL_ITEMS.TEXT
+            ? TOOL_ACTION_TYPES.WRITING //Ab writing mode mei chala jao agar mai text element laaunga yaha pe
+            : TOOL_ACTION_TYPES.DRAWING,
         elements: [...prevElements, newElement],
       };
     }
@@ -126,7 +129,7 @@ const boardReducer = (state, action) => {
         type === TOOL_ITEMS.ARROW
       ) {
         const { x1, y1, stroke, fill, size } = newElements[index];
-        const newElement = createRoughElement(index, x1, y1, clientX, clientY, {
+        const newElement = createElement(index, x1, y1, clientX, clientY, {
           type: state.activeToolItem,
           stroke,
           fill,
@@ -189,6 +192,20 @@ const boardReducer = (state, action) => {
     }
     //P--11
     //Part--4
+
+    //P13
+    case BOARD_ACTIONS.CHANGE_TEXT: {
+      const index = state.elements.length - 1;
+      const newElements = [...state.elements];
+      newElements[index].text = action.payload.text;
+
+      return {
+        ...state,
+        toolActionType: TOOL_ACTION_TYPES.NONE, //as mai aab blur kar diya hu that is text ko canvas pe add karne ke baad, so ab mai toolActionType ko NONE kr dunga.
+        elements: newElements,
+      };
+    }
+    //P--13
     default:
       return state;
   }
@@ -228,6 +245,18 @@ const BoardProvider = ({ children }) => {
 
   //To handle elements new pushes, kyuki mujhe states change krni thi mouse drop krne p, wo mai provider ke andar hi kar paunga
   const boardMouseDownHandler = (event, toolboxState) => {
+    //P13
+    // if (boardState.activeToolItem === TOOL_ITEMS.TEXT) {
+    //   dispatchBoardAction({
+    //     type: BOARD_ACTIONS.CHANGE_ACTION_TYPE,
+    //     payload: {
+    //       actionType: TOOL_ACTION_TYPES.WRITING,
+    //     },
+    //   });
+
+    // }
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    //--P13
     const { clientX, clientY } = event;
     // const roughEle = gen.line(clientX, clientY, clientX, clientY); //(x1,y1)initial ---- (x2,y2) final
 
@@ -257,6 +286,8 @@ const BoardProvider = ({ children }) => {
 
   //Lect 4
   const boardMouseMoveHandler = (event) => {
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return; //Agar toolActionType WRITING hai to move handler ko call mat karo, kyuki text area pe click karne ke baad bhi mouse move hoga to wo bhi call ho jayega, jo ki nahi chahiye
+
     const { clientX, clientY } = event;
     // const roughEle = gen.line(clientX, clientY, clientX, clientY); //(x1,y1)initial ---- (x2,y2) final
     if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
@@ -281,6 +312,9 @@ const BoardProvider = ({ children }) => {
 
   //Movehandler mei move karte time hum ye bhi dekhna hai ki mai draw kar raha hu ya erase, to uske liye mai toolActionType banaunga reducer mei and uske hisab se mai move handler ko call karunga ya nahi
   const boardMouseUpHandler = () => {
+    //P13
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
+    //--P13
     dispatchBoardAction({
       // type: BOARD_ACTIONS.DRAW_UP,
       //P11
@@ -294,6 +328,24 @@ const BoardProvider = ({ children }) => {
 
   //--Lect 4
 
+  //P13
+  const textAreaBlurHandler = (text, toolboxState) => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.CHANGE_TEXT,
+      payload: {
+        text,
+
+        //Below elements were thought to be needed, but not needed.
+        // stroke: toolboxState[boardState.activeToolItem]?.stroke,
+        // size: toolboxState[boardState.activeToolItem]?.size,
+        //BOARD Context ke andar baat ye thi ki stroke aur size mujhe milega kaise. Toh maine ye kiya ki jab bhi text area blur hoga, tab mai toolboxState ko as a parameter pass karunga, jisme se mai stroke and size nikal lunga, aur fir ye sab payload mei dispatch kr dunga YA fir mai toolbox ko board ke bahar kar du. So jaha se ye call hoga waha se mai toolboxState ko as a parameter pass kar dunga.
+      },
+
+      //Since maine dispath action kia hai so issi file mei reducer mei mujhe iska case banana padega
+    });
+  };
+  //--P13
+
   const boardContextValue = {
     // activeToolItem, //After handling things with reducer instead of useStates, this we will give as
     activeToolItem: boardState.activeToolItem,
@@ -306,6 +358,10 @@ const BoardProvider = ({ children }) => {
     toolActionType: boardState.toolActionType,
     boardMouseUpHandler,
     //Lect--4
+
+    //P13
+    textAreaBlurHandler,
+    //--P13
   };
 
   return (

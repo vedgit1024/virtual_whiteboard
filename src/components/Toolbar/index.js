@@ -16,6 +16,7 @@ import {
   FaArrowRight,
   FaPaintBrush,
   FaEraser,
+  FaFont, //added, P13
 } from "react-icons/fa";
 
 import boardContext from "../../store/board-context";
@@ -78,6 +79,15 @@ const Toolbar = () => {
         onClick={() => changeToolHandler(TOOL_ITEMS.ERASER)}
       >
         <FaEraser />
+      </div>
+      {/* Adding text tool */}
+      <div
+        className={cx(classes.toolItem, {
+          [classes.active]: activeToolItem === TOOL_ITEMS.TEXT,
+        })}
+        onClick={() => changeToolHandler(TOOL_ITEMS.TEXT)}
+      >
+        <FaFont />
       </div>
     </div>
   );

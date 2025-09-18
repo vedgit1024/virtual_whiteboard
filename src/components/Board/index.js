@@ -6,8 +6,15 @@ import boardContext from "../../store/board-context";
 import { TOOL_ACTION_TYPES, TOOL_ITEMS } from "../../constants";
 import toolboxContext from "../../store/toolbox-context";
 
+import classes from "./index.module.css";
+
 function Board() {
   const canvasRef = useRef();
+
+  //P13
+  const textAreaRef = useRef();
+  //--P13
+
   //Lect3
   const {
     elements,
@@ -15,6 +22,10 @@ function Board() {
     boardMouseMoveHandler,
     boardMouseUpHandler, //Part 4
     toolActionType,
+    //P13
+    //boardContext se textAreaBlurHandler ko le aaya
+    textAreaBlurHandler,
+    //P--13
   } = useContext(boardContext);
   //--Lect3
 
@@ -96,6 +107,14 @@ function Board() {
           context.restore();
           break;
         }
+        case TOOL_ITEMS.TEXT: {
+          context.textBaseline = "top";
+          context.font = `${element.size}px Caveat`;
+          context.fillStyle = element.stroke;
+          context.fillText(element.text, element.x1, element.y1);
+          context.restore();
+          break;
+        }
         default:
           throw new Error("Type Not Recognized");
       }
@@ -105,6 +124,17 @@ function Board() {
     //clearning the side effect--> cleanup function lga diya, kyuki agar elements change ho to sab saaf krdo canvas fir element draw krdo
     return () => context.clearRect(0, 0, canvas.width, canvas.height);
   }, [elements]);
+
+  //P13
+  useEffect(() => {
+    const textArea = textAreaRef.current;
+    if (toolActionType === TOOL_ACTION_TYPES.WRITING) {
+      setTimeout(() => {
+        textArea.focus(); //To focus on text area as soon as it appears
+      }, 0);
+    }
+  }, [elements]);
+  //--P13
 
   const handleMouseDown = (event) => {
     // const clientX = event.clientX;
@@ -126,12 +156,31 @@ function Board() {
   //--Part 4
 
   return (
-    <canvas
-      ref={canvasRef}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    />
+    <>
+      {toolActionType === TOOL_ACTION_TYPES.WRITING && (
+        <textarea
+          type="text"
+          ref={textAreaRef}
+          className={classes.textElementBox}
+          style={{
+            top: elements[elements.length - 1].y1,
+            left: elements[elements.length - 1].x1,
+            fontSize: `${elements[elements.length - 1]?.size}px`,
+            color: elements[elements.length - 1]?.stroke,
+          }}
+          onBlur={
+            (event) => textAreaBlurHandler(event.target.value, toolboxState)
+            //Yaha pe tooboxState uper aa hi rahi hai, toolbox context se, so yaha pe as a parameter pass kar denge so that mujhe stroke and size mil jaye BoardProvider mei.
+          }
+        />
+      )}
+      <canvas
+        ref={canvasRef}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      />
+    </>
   );
 }
 
