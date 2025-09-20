@@ -180,6 +180,47 @@ function Board() {
   };
   //--Part 4
 
+  ////////
+  /// ADDING TOUCH SUPPORT FEATURE & WRITING PAD FEATURE -- OPTIMIZATIONs for better User Exoerience
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const touchToMouse = (touchEvent) => {
+      const touch = touchEvent.touches[0] || touchEvent.changedTouches[0];
+      return {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      };
+    };
+
+    const handleTouchStart = (e) => {
+      e.preventDefault();
+      handleMouseDown(touchToMouse(e));
+    };
+
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+      handleMouseMove(touchToMouse(e));
+    };
+
+    const handleTouchEnd = (e) => {
+      e.preventDefault();
+      handleMouseUp(touchToMouse(e));
+    };
+
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [handleMouseDown, handleMouseMove, handleMouseUp]);
+
+  ///////
   return (
     <>
       {toolActionType === TOOL_ACTION_TYPES.WRITING && (
