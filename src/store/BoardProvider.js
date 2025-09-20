@@ -190,6 +190,7 @@ const boardReducer = (state, action) => {
 
       newHistory.push(elementsCopy); //Fir usme mai current elements ko push kar dunga
       return {
+        ...state,
         history: newHistory,
         index: state.index + 1,
       };
@@ -203,9 +204,14 @@ const boardReducer = (state, action) => {
       newElements = newElements.filter((element) => {
         return !isPointNearElement(element, clientX, clientY);
       });
+
+      // const newHistory = state.history.slice(0, state.index + 1); //Aabhi tak ki history ko le lo, uske aage wali history ko hata do
+      // newHistory.push(newElements);
       return {
         ...state,
         elements: newElements,
+        // history: newHistory,
+        // index: state.index + 1,
       };
     }
     //P--11

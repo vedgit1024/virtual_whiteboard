@@ -17,6 +17,8 @@ import {
   FaPaintBrush,
   FaEraser,
   FaFont, //added, P13
+  FaUndoAlt,
+  FaRedoAlt,
 } from "react-icons/fa";
 
 import boardContext from "../../store/board-context";
@@ -25,7 +27,8 @@ import { TOOL_ITEMS } from "../../constants";
 const Toolbar = () => {
   //I want whichever tool I click, remain active. so I will use state
   // const [activeToolItem, setActiveToolItem] = useState("LINE"); //Let initially my active toolItem is A//Naming Tools properly Now
-  const { activeToolItem, changeToolHandler } = useContext(boardContext);
+  const { activeToolItem, changeToolHandler, undo, redo } =
+    useContext(boardContext);
 
   return (
     <div className={classes.container}>
@@ -88,6 +91,15 @@ const Toolbar = () => {
         onClick={() => changeToolHandler(TOOL_ITEMS.TEXT)}
       >
         <FaFont />
+      </div>
+
+      {/* Adding undo redo - P14 */}
+      <div className={classes.toolItem} onClick={undo}>
+        <FaUndoAlt />
+      </div>
+
+      <div className={classes.toolItem} onClick={redo}>
+        <FaRedoAlt />
       </div>
     </div>
   );
