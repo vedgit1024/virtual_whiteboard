@@ -178,6 +178,24 @@ const boardReducer = (state, action) => {
     //     toolActionType: TOOL_ACTION_TYPES.NONE,
     //   };
     // } ------->>>>>>>>>Now aab iski zarurat nahi hai, kyuki mai mouse up hone pe bhi toolActionType ko NONE kr dunga
+
+    //P14
+    case BOARD_ACTIONS.DRAW_UP: {
+      const elementsCopy = [...state.elements];
+      const newHistory = state.history.slice(0, state.index + 1); //Aabhi tak ki history ko le lo, uske aage wali history ko hata do
+      //Agar mai koi naya element draw karunga to uske aage wali history ki koi value nahi honi chahiye, kyuki undo redo ka logic to wahi kaam karega
+      //So isliye mai slice kar ke nayi history banaunga jisme sirf abhi tak ki history hogi, uske aage wali nahi hogi
+      //Agar mai koi naya element draw karunga to uske aage wali history ki koi value nahi honi chahiye, kyuki undo redo ka logic to wahi kaam karega
+      //So isliye mai slice kar ke nayi history banaunga jisme sirf abhi tak ki history hogi, uske aage wali nahi hogi
+
+      newHistory.push(elementsCopy); //Fir usme mai current elements ko push kar dunga
+      return {
+        history: newHistory,
+        index: state.index + 1,
+      };
+    }
+    //P--14
+
     //P11
     case BOARD_ACTIONS.ERASE: {
       const { clientX, clientY } = action.payload;
@@ -199,13 +217,42 @@ const boardReducer = (state, action) => {
       const newElements = [...state.elements];
       newElements[index].text = action.payload.text;
 
+      //P14
+      const newHistory = state.history.slice(0, state.index + 1);
+      newHistory.push(newElements);
+      //--P14
+
       return {
         ...state,
         toolActionType: TOOL_ACTION_TYPES.NONE, //as mai aab blur kar diya hu that is text ko canvas pe add karne ke baad, so ab mai toolActionType ko NONE kr dunga.
         elements: newElements,
+        //P14
+        history: newHistory,
+        index: state.index + 1,
+        //--P14
       };
     }
     //P--13
+
+    //P14
+    case BOARD_ACTIONS.UNDO: {
+      if (state.index <= 0) return state; //Agar index 0 hai to kuch nahi karna, kyuki aur peeche nahi ja sakte
+      return {
+        ...state,
+        elements: state.history[state.index - 1],
+        index: state.index - 1,
+      };
+    }
+
+    case BOARD_ACTIONS.REDO: {
+      if (state.index >= state.history.length - 1) return state; //Agar index 0 hai to kuch nahi karna, kyuki aur peeche nahi ja sakte
+      return {
+        ...state,
+        elements: state.history[state.index + 1],
+        index: state.index + 1,
+      };
+    }
+    //--P14
     default:
       return state;
   }
@@ -217,6 +264,12 @@ const initialBoardState = {
   //Part 4
   toolActionType: TOOL_ACTION_TYPES.NONE, //initially NONE hoga, baad mei mai jab click karunga, draw down hone pe toolActionType change krdo
   //--Part4
+
+  //P14
+  //History and index states for undo redo
+  history: [[]], //Initially history has one array which is empty
+  index: 0, //Initially index is 0
+  //P--14
 };
 //--Lect3
 
@@ -315,6 +368,15 @@ const BoardProvider = ({ children }) => {
     //P13
     if (boardState.toolActionType === TOOL_ACTION_TYPES.WRITING) return;
     //--P13
+
+    //P14
+    if (boardState.toolActionType === TOOL_ACTION_TYPES.DRAWING) {
+      dispatchBoardAction({
+        type: BOARD_ACTIONS.DRAW_UP,
+      });
+      //Aab jaunga reducer mei iss case banaunga jisme mai history and index ko update karunga
+    }
+    //--P14
     dispatchBoardAction({
       // type: BOARD_ACTIONS.DRAW_UP,
       //P11
@@ -346,6 +408,21 @@ const BoardProvider = ({ children }) => {
   };
   //--P13
 
+  //P14
+  const boardUndoHandler = () => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.UNDO,
+    });
+  };
+  const boardRedoHandler = () => {
+    dispatchBoardAction({
+      type: BOARD_ACTIONS.REDO,
+    });
+  };
+  //Now define reducer of these two actions in boardReducer
+
+  //--P14
+
   const boardContextValue = {
     // activeToolItem, //After handling things with reducer instead of useStates, this we will give as
     activeToolItem: boardState.activeToolItem,
@@ -362,6 +439,11 @@ const BoardProvider = ({ children }) => {
     //P13
     textAreaBlurHandler,
     //--P13
+
+    //P14
+    undo: boardUndoHandler,
+    redo: boardRedoHandler,
+    //--P14
   };
 
   return (

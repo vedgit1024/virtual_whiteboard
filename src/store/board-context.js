@@ -3,6 +3,15 @@ import { createContext } from "react";
 const boardContext = createContext({
   activeToolItem: "",
   elements: [],
+
+  //P14
+  //Adding a new state history to manage undo redo
+  history: [[]], //Initially history has one array which is empty
+  index: 0, //Initially index is 0
+
+  //Aab isko de denge provider mei
+  //P--14
+
   //Part4
   toolActionType: "", //It is imp because mouse move is after clicking at a point, board is not able to understand if i am drawing or stopped.
   //--Part 4
