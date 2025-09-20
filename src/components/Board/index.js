@@ -1,4 +1,4 @@
-import { use, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef } from "react";
 
 //importing rough.js
 import rough from "roughjs";
@@ -84,7 +84,7 @@ function Board() {
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const roughCanvas = rough.canvas(canvas);
-    const generator = roughCanvas.generator;
+    // const generator = roughCanvas.generator;
 
     const context = canvas.getContext("2d");
     context.save();
@@ -158,7 +158,7 @@ function Board() {
         textArea.focus(); //To focus on text area as soon as it appears
       }, 0);
     }
-  }, [elements]);
+  }, [toolActionType]);
   //--P13
 
   const handleMouseDown = (event) => {
@@ -194,7 +194,7 @@ function Board() {
             color: elements[elements.length - 1]?.stroke,
           }}
           onBlur={
-            (event) => textAreaBlurHandler(event.target.value, toolboxState)
+            (event) => textAreaBlurHandler(event.target.value)
             //Yaha pe tooboxState uper aa hi rahi hai, toolbox context se, so yaha pe as a parameter pass kar denge so that mujhe stroke and size mil jaye BoardProvider mei.
           }
         />

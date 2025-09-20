@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import classes from "./index.module.css";
 
-import { useState } from "react";
-
 //Now i will import something from classnames
 //classnames is a library which conditionally give classes and more cleaner to write codes
 

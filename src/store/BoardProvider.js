@@ -1,4 +1,4 @@
-import React, { act, useCallback, useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 
@@ -6,14 +6,14 @@ import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 
 //Lect3
 
-import rough from "roughjs/bin/rough";
+// import rough from "roughjs/bin/rough";
 
 import { createElement, getSvgPathFromStroke } from "../utils/elements";
 import getStroke from "perfect-freehand"; //Installed perfect-freehand library first
 
 import { isPointNearElement } from "../utils/elements";
 
-const gen = rough.generator();
+// const gen = rough.generator();
 
 const boardReducer = (state, action) => {
   switch (action.type) {
@@ -397,7 +397,7 @@ const BoardProvider = ({ children }) => {
   //--Lect 4
 
   //P13
-  const textAreaBlurHandler = (text, toolboxState) => {
+  const textAreaBlurHandler = (text) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.CHANGE_TEXT,
       payload: {
@@ -419,12 +419,12 @@ const BoardProvider = ({ children }) => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.UNDO,
     });
-  });
+  }, []);
   const boardRedoHandler = useCallback(() => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.REDO,
     });
-  });
+  }, []);
   //Now define reducer of these two actions in boardReducer
 
   //--P14
