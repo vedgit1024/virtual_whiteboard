@@ -19,6 +19,7 @@ import {
   FaFont, //added, P13
   FaUndoAlt,
   FaRedoAlt,
+  FaDownload,
 } from "react-icons/fa";
 
 import boardContext from "../../store/board-context";
@@ -29,6 +30,32 @@ const Toolbar = () => {
   // const [activeToolItem, setActiveToolItem] = useState("LINE"); //Let initially my active toolItem is A//Naming Tools properly Now
   const { activeToolItem, changeToolHandler, undo, redo } =
     useContext(boardContext);
+
+  //P15
+  const handleDownloadClick = () => {
+    const canvas = document.getElementById("canvas");
+    // Create a temporary canvas
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = canvas.width;
+    exportCanvas.height = canvas.height;
+
+    const ctx = exportCanvas.getContext("2d");
+
+    // Step 1: Fill with solid white
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+    // Step 2: Draw original content on top
+    ctx.drawImage(canvas, 0, 0);
+
+    // Step 3: Export
+    const dataURL = exportCanvas.toDataURL("image/png");
+    const anchor = document.createElement("a");
+    anchor.href = dataURL;
+    anchor.download = "board.png";
+    anchor.click();
+  };
+  //--P15
 
   return (
     <div className={classes.container}>
@@ -100,6 +127,9 @@ const Toolbar = () => {
 
       <div className={classes.toolItem} onClick={redo}>
         <FaRedoAlt />
+      </div>
+      <div className={classes.toolItem} onClick={handleDownloadClick}>
+        <FaDownload />
       </div>
     </div>
   );

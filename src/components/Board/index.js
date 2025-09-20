@@ -176,6 +176,7 @@ function Board() {
       )}
       <canvas
         ref={canvasRef}
+        id="canvas"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
