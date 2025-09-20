@@ -1,4 +1,4 @@
-import { useContext, useEffect, useLayoutEffect, useRef } from "react";
+import { use, useContext, useEffect, useLayoutEffect, useRef } from "react";
 
 //importing rough.js
 import rough from "roughjs";
@@ -26,6 +26,11 @@ function Board() {
     //boardContext se textAreaBlurHandler ko le aaya
     textAreaBlurHandler,
     //P--13
+
+    //P16
+    undo,
+    redo,
+    //-P16
   } = useContext(boardContext);
   //--Lect3
 
@@ -54,6 +59,26 @@ function Board() {
     // context.fillStyle = "#FF0000"; -->Was just to visualise shape using canvas, so commented later
     // context.fillRect(0, 0, 150, 75);
   }, []);
+
+  //P16
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.ctrlKey && event.key === "z") {
+        undo();
+      } else if (event.ctrlKey && event.key === "y") {
+        redo();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    //cleanup function
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+    //Jab mai unmount karunga dom mei se to mujhe hmesha event listener ko remove karna padega, otherwise unexpected behaviours are possible
+  }, [undo, redo]);
+  //--P16
 
   //Ek new useEffect bnaya aur uper se isme jo commented out h code wo daal diya
   useLayoutEffect(() => {

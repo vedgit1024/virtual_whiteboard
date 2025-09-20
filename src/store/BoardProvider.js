@@ -1,4 +1,4 @@
-import React, { act, useReducer } from "react";
+import React, { act, useCallback, useReducer } from "react";
 import boardContext from "./board-context";
 import { BOARD_ACTIONS, TOOL_ACTION_TYPES, TOOL_ITEMS } from "../constants";
 
@@ -415,16 +415,16 @@ const BoardProvider = ({ children }) => {
   //--P13
 
   //P14
-  const boardUndoHandler = () => {
+  const boardUndoHandler = useCallback(() => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.UNDO,
     });
-  };
-  const boardRedoHandler = () => {
+  });
+  const boardRedoHandler = useCallback(() => {
     dispatchBoardAction({
       type: BOARD_ACTIONS.REDO,
     });
-  };
+  });
   //Now define reducer of these two actions in boardReducer
 
   //--P14
