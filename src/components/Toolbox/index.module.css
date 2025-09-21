@@ -1,6 +1,16 @@
-.container {
+/* .container {
   @apply absolute top-1/2 left-5 text-sm border border-gray-400;
   transform: translateY(-50%);
+  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);
+} */
+
+.container {
+  @apply absolute text-sm border border-gray-400 bg-white;
+  @apply left-5 bottom-5; /* default = mobile = bottom-left */
+
+  /* for medium screens and larger, move it to center-left */
+  @apply md:top-1/2 md:bottom-auto md:transform md:-translate-y-1/2;
+
   box-shadow: 1px 0 10px rgba(0, 0, 0, 0.2);
 }
 
